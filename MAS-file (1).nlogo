@@ -1,21 +1,21 @@
 directed-link-breed [active-links active-link]
-to clear
-  clear-all
-end
+globals [counter]
 
 to setup
   clear-all
   reset-ticks
   set-default-shape turtles "circle"
+end
 
-
-;  file-open "test.txt"
-  file-open "douban.txt"
+to go
+ ; file-open "test.txt"
+   file-open "douban.txt"
   while [ not file-at-end? ] [
     let x-in file-read
     let y-in file-read
 
     print x-in
+;    wait(0.00000002)
     print y-in
 
 
@@ -30,31 +30,34 @@ to setup
       setxy random-xcor random-ycor
     ]
    ]
-;     ask turtle x-in
-;    [ create-link-with turtle y-in ]
+
+   if is-turtle? turtle x-in[
+     if is-turtle? turtle y-in[
+   ask turtle x-in[
+      create-active-link-to turtle y-in
+      set counter counter + 1
+      set size 1
+     set color one-of base-colors
+      facexy 0 0
+    fd (distancexy 0 0) / 100
+       ]
+     ]
+   ]
 
   tick
-
+  print "counter is "
+  print counter
+ ; layout
   ]
-
-
-
 file-close
+stop
 end
 
-to create-link
-;  file-open "test.txt"
-  file-open "douban.txt"
-  while [ not file-at-end? ] [
-
-    let x-in file-read
-    let y-in file-read
-
-    ask turtle x-in
-    [ create-active-link-to turtle y-in ]
-
-  ]
-end
+;to layout
+;
+;  repeat 30 [layout-spring turtles active-links 0.2 5 1]
+;
+;end
 @#$#@#$#@
 GRAPHICS-WINDOW
 199
@@ -101,29 +104,12 @@ NIL
 1
 
 BUTTON
-80
-39
+84
+155
 147
-72
-NIL
-clear
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-80
-125
 188
-158
 NIL
-create-link
+go
 NIL
 1
 T
