@@ -47,17 +47,20 @@ to go
   tick
   print "counter is "
   print counter
- ; layout
+  layout
   ]
 file-close
 stop
 end
 
-;to layout
-;
-;  repeat 30 [layout-spring turtles active-links 0.2 5 1]
-;
-;end
+to layout
+
+  repeat 3 [
+    layout-spring turtles active-links 0.2 5 1
+    display
+    ]
+
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
 199
