@@ -8,45 +8,48 @@ to setup
   clear
   reset-ticks
   set-default-shape turtles "circle"
-  file-close    ;; IF THE FUNCTION GETS INTERRUPTED AND THE OLD FILE IS STILL OPENED, SO CLOSE IT.
+  file-close
 end
 
 to setup-connections
-  file-open "test.txt"
-;  file-open "douban.txt"
+  file-open "douban.txt"
 
   while [ not file-at-end? ] [
     let x-in file-read
     let y-in file-read
 
-   ifelse is-turtle? turtle x-in[ print "Already exists a turtle"] [  ;; IF ALREADY A TURLTE WITH SAME NODE NUMBER THEN PRINT "ALREADY EXISTS A TURTLE" ELSE CREATE TURTLE
+   ifelse is-turtle? turtle x-in[ print "Already exists a turtle"] [
     create-turtles 1[
-      setxy random-xcor random-ycor    ;; CREATING THE TURTLES AT RANDOM POSITION
+      setxy random-xcor random-ycor
     ]
     ]
 
-   ifelse is-turtle? turtle y-in[ print "Already exists a turtle"] [    ;; ;; IF ALREADY A TURLTE WITH SAME NODE NUMBER THEN PRINT "ALREADY EXISTS A TURTLE" ELSE CREATE TURTLE
+   ifelse is-turtle? turtle y-in[ print "Already exists a turtle"] [
     create-turtles 1[
-      setxy random-xcor random-ycor     ;; CREATING THE TURTLES AT RANDOM POSITION
+      setxy random-xcor random-ycor
     ]
    ]
 
    ask turtle x-in
     [
-      create-active-link-to turtle y-in   ;; CREATING DIRECTED LINKS FROM X to Y
+      if not any? turtles [ stop ]
+;      create-link-with turtle y-in
+       create-active-link-to turtle y-in ;;Directed connections
     ]
-layout
-tick
 ]
+layout
+file-close
+
+tick
 end
 
-;;To adjust the nodes within the given layout
+
 to layout
    ask turtles [
      set size 1
      set color red
   ]
-  layout-spring turtles active-links 5 1 0.5
+  layout-spring turtles links 2 1 0.5
 
   ask turtles [
     facexy 0 0
@@ -55,21 +58,21 @@ to layout
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-199
-19
-630
-471
+210
+10
+649
+470
 16
 16
-12.76
+13.0
 1
 10
 1
 1
 1
 0
-0
-0
+1
+1
 1
 -16
 16
@@ -82,10 +85,10 @@ ticks
 30.0
 
 BUTTON
-49
-81
-122
-114
+66
+21
+132
+54
 NIL
 setup
 NIL
@@ -99,11 +102,28 @@ NIL
 1
 
 BUTTON
-84
-155
-147
-188
-go
+117
+76
+180
+109
+Go
+setup-connections
+T
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+0
+
+BUTTON
+7
+77
+93
+110
+Go-once
 setup-connections
 NIL
 1
