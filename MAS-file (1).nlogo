@@ -12,8 +12,8 @@ to setup
 end
 
 to setup-connections
-  file-open "test.txt"
-;  file-open "douban.txt"
+;  file-open "test.txt"
+  file-open "douban.txt"
 
   while [ not file-at-end? ] [
     let x-in file-read
