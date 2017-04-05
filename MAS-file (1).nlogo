@@ -12,8 +12,8 @@ to setup
 end
 
 to setup-connections
-;  file-open "test.txt"
-  file-open "douban.txt"
+;  file-open file-name
+  file-open file-name
 
   while [ not file-at-end? ] [
     let x-in file-read
@@ -35,7 +35,7 @@ to setup-connections
     [
       create-active-link-to turtle y-in   ;; CREATING DIRECTED LINKS FROM X to Y
     ]
-layout
+;layout
 tick
 ]
 end
@@ -114,6 +114,17 @@ NIL
 NIL
 NIL
 0
+
+INPUTBOX
+26
+11
+149
+71
+file-name
+douban.txt
+1
+0
+String
 
 @#$#@#$#@
 ## WHAT IS IT?
