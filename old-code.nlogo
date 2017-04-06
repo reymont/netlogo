@@ -1,459 +1,79 @@
 directed-link-breed[active-links active-link]
-extensions [r]
 
-turtles-own [message?]
-
-to import-network
+to clear
   clear-all
-  reset-ticks
-  file-close
-  set-default-shape turtles "person"
-  import-nodes
 end
 
-to import-nodes
-  if(Database = "sinaShort") [
-    create-turtles 6[
-      setxy random-xcor random-ycor
-      set message? false
-  ]]
+to setup
+  clear
+  reset-ticks
+  set-default-shape turtles "circle"
+  file-close
+end
 
-  if(Database = "doubanShort") [
-    create-turtles 6[
-      setxy random-xcor random-ycor
-      set message? false
-   ]]
+to setup-connections
+  file-open "douban.txt"
 
-  if(Database = "Sina Weibo") [
-    create-turtles 10608[
-      setxy random-xcor random-ycor
-      set message? false
-  ]]
+  while [ not file-at-end? ] [
+    let x-in file-read
+    let y-in file-read
 
-  if(Database = "Douban") [
-    create-turtles 12209[
+   ifelse is-turtle? turtle x-in[ print "Already exists a turtle"] [
+    create-turtles 1[
       setxy random-xcor random-ycor
-      set message? false
-   ]]
+    ]
+    ]
 
-   ask one-of turtles [
-     set message? true  ;; give the message to one of the turtles
-    print "Initial message given to"
-     print who
+   ifelse is-turtle? turtle y-in[ print "Already exists a turtle"] [
+    create-turtles 1[
+      setxy random-xcor random-ycor
+    ]
    ]
 
-end
-
-;;; This procedure reads in a file that contains all the links
-;;; The file is simply 2 columns separated by spaces.  In this
-;;; example, the links are directed.  The first column contains
-;;; the node-id of the node originating the link.  The second
-;;; column the node-id of the node on the other end of the link.
-
-to import-links
-  ;; This opens the file, so we can use it.
-  if(Database = "sinaShort") [file-open "sinaShort.txt"]
-  if(Database = "doubanShort") [file-open "DoubanShort.txt"]
-  if(Database = "Sina Weibo") [file-open "sina.txt"]
-  if(Database = "Douban") [file-open "Douban.txt"]
-
-  ;; Read in all the data in the file
-  while [not file-at-end?]
-  [
-    ;; this reads a single line into a two-item list
-    let items read-from-string (word "[" file-read-line "]")
-    ask turtle item 0 items
+   ask turtle x-in
     [
-      create-active-link-to turtle item 1 items
+      create-active-link-to turtle y-in
     ]
-    tick
+tick
+]
+  ask turtles[
+    print who
   ]
-  file-close
-end
-
-to spread-message
-  if all? turtles [ message? ] [ stop ]
-  ask turtles [ communicate ]
-  ask turtles [ recolor ]
-end
-
-;; the core procedure!
-to communicate  ;; turtle procedure
-  if any? out-active-link-neighbors with [ message? ]
-    [ set message? true ]
-end
-
-;; color turtles with message red, and those without message blue
-to recolor  ;; turtle procedure
-  ifelse message?
-    [ set color red ]
-    [ set color blue ]
+  print "COINT TURTLES"
+  print count turtles
+file-close
 end
 
 
+to layout
+   ask turtles [
+     set size 0.4
+     set color red
+  ]
+  layout-spring turtles active-links 5 1 0.5
 
-;;;===============OLD CODE 3=========================
-;directed-link-breed[active-links active-link]
-;;globals[lst nodesList]
-;extensions [r]
-;
-;turtles-own [message?]
-;
-;to clear
-;  clear-all
-;end
-;
-;to import-network
-;  clear-all
-;  reset-ticks
-;  file-close
-;  set-default-shape turtles "person"
-;  import-nodes
-;end
-;
-;to import-nodes
-;let nodesList []
-;; file-open file-name
-;;  ;; Read in all the data in the file
-;;  while [not file-at-end?]
-;;  [
-;;    ;; this reads a single line into a two-item list
-;;    set nodesList lput file-read nodesList
-;;    set nodesList remove-duplicates nodesList
-;;  ]
-;;  file-close
-;;  print nodesList
-;;  print length nodesList
-;;  print last nodesList
-;
-;  create-turtles 12209[
-;    setxy random-xcor random-ycor
-;    set message? false
-;  ]
-;
-;   ask one-of turtles [
-;    set message? true  ;; give the message to one of the turtles
-;    print "===========================YO MAMA============================="
-;    print who
-;    print "========================TAMMA TAMMA DEDE======================="
-;
-;  ]
-;
-;
-;;  ask turtles[
-;;      print who
-;;    ]
-;;
-;;  print "COINT TURTLES"
-;;  print count turtles
-;
-;
-;
-;;  foreach nodesList[
-;;  create-turtles 1[
-;;      setxy random-xcor random-ycor
-;;  ]
-;;  tick
-;;  ]
-;
-;
-;;  file-open "nodes-list.txt"
-;;
-;;    file-write nodesList
-;;    print nodesList
-;;    file-close
-;end
-;;
-;;;; This procedure reads in a file that contains all the links
-;;;; The file is simply 2 columns separated by spaces.  In this
-;;;; example, the links are directed.  The first column contains
-;;;; the node-id of the node originating the link.  The second
-;;;; column the node-id of the node on the other end of the link.
-;
-;to import-links
-;  ;; This opens the file, so we can use it.
-;  file-open file-name
-;  ;; Read in all the data in the file
-;  while [not file-at-end?]
-;  [
-;    ;; this reads a single line into a two-item list
-;    let items read-from-string (word "[" file-read-line "]")
-;    ask turtle item 0 items
-;    [
-;      create-active-link-to turtle item 1 items
-;;      print "==========="
-;;      show my-links
-;    ]
-;    tick
-;  ]
-;  file-close
-;  ask turtles[
-;  ;print "if any? link-neighbors with [ message? ]"
-;  if any? active-link-neighbors with [ message? ][
-;    print "if any? link-neighbors with [ message? ]"
-;    print who
-;    ]
-;  ]
-;end
-;
-;;; Helper procedure for looking up a node by node-id.
-;;to-report get-node [id]
-;;  report one-of turtles with [node-id = who]
-;;end
-;
-;to spread-message
-;  if all? turtles [ message? ] [ stop ]
-;  ask turtles [ communicate ]
-;  ask turtles [ recolor ]
-;end
-;
-;;; the core procedure!
-;to communicate  ;; turtle procedure
-;  if any? active-link-neighbors with [ message? ]
-;    [
-;      print "in communicate if "
-;      set message? true ]
-;end
-;
-;;; color turtles with message red, and those without message blue
-;to recolor  ;; turtle procedure
-;  ifelse message?
-;    [ set color red ]
-;    [ set color blue ]
-;end
-;
-;;;;====================OLD CODE 2 ======================================
-;;
-;;;directed-link-breed[active-links active-link]
-;;extensions [r]
-;;
-;;turtles-own [node-id
-;;  message? ;; true or false: has this turtle gotten the message yet?
-;;  ]
-;;globals [links-list col-0 col-1]
-;;
-;;to clear
-;;  clear-all
-;;end
-;;
-;;to import-network
-;;  clear-all
-;;  file-close
-;;  reset-ticks
-;;  set-default-shape turtles "circle"
-;;  import-nodes
-;;end
-;;
-;;to import-nodes
-;; file-open file-name
-;;  ;; Read in all the data in the file
-;;  while [not file-at-end?][
-;;
-;;;    ;; this reads a single line into a two-item list
-;;    let items read-from-string (word "[" file-read-line "]")
-;;
-;;    print "================="
-;;
-;;    print is-turtle? turtle item 0 items
-;;    print item 0 items
-;;
-;;    print is-turtle? turtle item 1 items
-;;    print item 1 items
-;;    if count turtles > 0[
-;;    ask get-node (item 0 items)[
-;;      set col-0 node-id
-;;    ]
-;;    ask get-node (item 1 items)[
-;;      set col-1 node-id
-;;    ]]
-;;    print "Col"
-;;    print col-0
-;;    print col-1
-;;    ifelse is-turtle? col-0[][
-;;   ; ifelse is-turtle? turtle item 0 items[][
-;;;      ifelse is-turtle? turtle item 1 items[][
-;;        create-turtles 1[
-;;          set node-id item 0 items
-;;          setxy random-xcor random-ycor
-;;          set message? false
-;;          print "NODE ID IS"
-;;          print node-id
-;;          print "item 0 ke if me"
-;;          print turtle item 0 items
-;;        ]
-;;;      ]
-;;    ;]
-;;    ]
-;;    print "WHO NUMBER"
-;;    ask turtles[
-;;      print who
-;;    ]
-;;    wait(1)
-;;    ifelse is-turtle? turtle col-1[][
-;;;    ifelse is-turtle? turtle item 0 items[][
-;;     ; ifelse is-turtle? turtle item 1 items[][
-;;        create-turtles 1[
-;;          set node-id item 1 items
-;;          setxy random-xcor random-ycor
-;;          set message? false
-;;          print "NODE ID IS"
-;;          print node-id
-;;           print "item 1 ke if me"
-;;           print turtle item 1 items
-;;        ]
-;;;      ]
-;;    ;]
-;;    ;]
-;;    ]
-;;      print "================="
-;;      wait(1)
-;;  ]
-;;
-;;  ask one-of turtles [
-;;    set message? true  ;; give the message to one of the turtles
-;;  ]
-;;  ask turtles [
-;;    recolor  ;; color the turtles according to whether they have the message
-;;;    create-links-with n-of links-per-node other turtles
-;;  ]
-;;
-;;  file-close
-;;end
-;;
-;;
-;;to spread-message
-;;  if all? turtles [ message? ] [ stop ]
-;;  ask turtles [ communicate ]
-;;  ask turtles [ recolor ]
-;;end
-;;
-;;;; the core procedure!
-;;to communicate  ;; turtle procedure
-;;  if any? link-neighbors with [ message? ]
-;;    [ set message? true ]
-;;end
-;;
-;;;; color turtles with message red, and those without message blue
-;;to recolor  ;; turtle procedure
-;;  ifelse message?
-;;    [ set color red ]
-;;    [ set color blue ]
-;;end
-;;
-;;
-;;;
-;;;;; This procedure reads in a file that contains all the links
-;;;;; The file is simply 2 columns separated by spaces.  In this
-;;;;; example, the links are directed.  The first column contains
-;;;;; the node-id of the node originating the link.  The second
-;;;;; column the node-id of the node on the other end of the link.
-;;;
-;;to import-links
-;;  ;; This opens the file, so we can use it.
-;;  file-open file-name
-;;  ;; Read in all the data in the file
-;;  while [not file-at-end?]
-;;  [
-;;    ;; this reads a single line into a two-item list
-;;    let items read-from-string (word "[" file-read-line "]")
-;;    ask get-node (item 0 items)
-;;    [
-;;      print "NODE IDDDDDD"
-;;      print node-id
-;;      create-link-to get-node (item 1 items)
-;;    ]
-;;    tick
-;;  ]
-;;  file-close
-;;end
-;;;
-;;;; Helper procedure for looking up a node by node-id.
-;;to-report get-node [id]
-;;  report one-of turtles with [node-id = id]
-;;end
-;;
-;;
-;;
-;;
-;;
-;;
-;;
-;;
-;;
-;;
-;;
-;;
-;;;=============OLD CODE=========================
-;;;
-;;;to clear
-;;;  clear-all
-;;;end
-;;;
-;;;to setup
-;;;  clear
-;;;  reset-ticks
-;;;  set-default-shape turtles "circle"
-;;;  file-close
-;;;end
-;;;
-;;;to setup-connections
-;;;  file-open "douban.txt"
-;;;
-;;;  while [ not file-at-end? ] [
-;;;    let x-in file-read
-;;;    let y-in file-read
-;;;
-;;;   ifelse is-turtle? turtle x-in[ print "Already exists a turtle"] [
-;;;    create-turtles 1[
-;;;      setxy random-xcor random-ycor
-;;;    ]
-;;;    ]
-;;;
-;;;   ifelse is-turtle? turtle y-in[ print "Already exists a turtle"] [
-;;;    create-turtles 1[
-;;;      setxy random-xcor random-ycor
-;;;    ]
-;;;   ]
-;;;
-;;;   ask turtle x-in
-;;;    [
-;;;      create-active-link-to turtle y-in
-;;;    ]
-;;;tick
-;;;]
-;;;file-close
-;;;end
-;;;
-;;;
-;;;to layout
-;;;   ask turtles [
-;;;     set size 0.4
-;;;     set color red
-;;;  ]
-;;;  layout-spring turtles active-links 5 1 0.5
-;;;
-;;;  ask turtles [
-;;;    facexy 0 0
-;;;    fd (distancexy 0 0) / 100
-;;;  ]
-;;;end
+  ask turtles [
+    facexy 0 0
+    fd (distancexy 0 0) / 100
+  ]
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
-351
-22
-780
-452
--1
--1
-12.76
+210
+10
+649
+470
+16
+16
+13.0
 1
 10
 1
 1
 1
 0
-0
-0
+1
+1
 1
 -16
 16
@@ -466,29 +86,12 @@ ticks
 30.0
 
 BUTTON
-106
-163
-220
-196
+34
+37
+107
+70
 NIL
-import-links
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-0
-
-BUTTON
-94
-105
-221
-138
-import-nodes
-import-network
+setup
 NIL
 1
 T
@@ -500,12 +103,12 @@ NIL
 1
 
 BUTTON
-65
-243
+51
+107
 217
-276
+140
 NIL
-spread-message
+setup-connections
 NIL
 1
 T
@@ -515,27 +118,6 @@ NIL
 NIL
 NIL
 1
-
-CHOOSER
-68
-22
-211
-67
-Database
-Database
-"Sina Weibo" "Douban" "sinaShort" "doubanShort"
-1
-
-MONITOR
-153
-297
-210
-342
-count
-count turtles with [message? ]
-17
-1
-11
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -878,8 +460,9 @@ false
 0
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
+
 @#$#@#$#@
-NetLogo 6.0.1
+NetLogo 5.3.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
@@ -895,6 +478,7 @@ true
 0
 Line -7500403 true 150 150 90 180
 Line -7500403 true 150 150 210 180
+
 @#$#@#$#@
 0
 @#$#@#$#@
